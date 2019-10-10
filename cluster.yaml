@@ -1,0 +1,7 @@
+__default__:
+  queue: "slim16"
+  threads: "16"
+  memory: "250G"
+  name: "{rule}"
+  output: "/work/project/ladsie_002/analyses/output/2019-09-05_mHiC_pipeline/logs/{rule}-%j.out"
+  time: 2-00:00:00

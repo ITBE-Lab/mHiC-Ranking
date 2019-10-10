@@ -54,7 +54,7 @@ if [ "$splitByChrom" -eq 1 ];then
 	else
 	    chrom=$c
 	fi
-	    
+
 	for type in UNI MULTI
 	do
 	    ## remove PCR duplicates based on alignment chrom + position
@@ -77,7 +77,7 @@ if [ "$splitByChrom" -eq 1 ];then
 	rm -rf $validI.*.MULTI
 	rm -rf $validI.*.MultiRMdupList
     fi
-    
+
 else
     for type in UNI MULTI
     do
@@ -133,7 +133,7 @@ rm -rf $dir/sorttmp
 mkdir $dir/sorttmp
 
 
-# Summary of removing duplicates
+Summary of removing duplicates
 if [ "${#summaryFile}" -eq "0" ]; then
     summaryFile=$dir/rmDuplicates.summary
 fi
@@ -166,7 +166,7 @@ if [ "$minCount" -gt "1" ];then
 
     if [ "$normMethod" != "None" ] &&  [ "$normMethod" != "NONE" ] &&  [ "$normMethod" != "none" ] &&  [ "$normMethod" != "" ]; then
 	if [ "$normMethod" == "ICE" ] || [ "$normMethod" == "ice" ]; then
-	
+
 	    # ICE normalization with filtering low mappability regions
 	    python3 $bin/ICE-with-sparseMatrix.py $validI.binPairCount.uni.minCount$minCount $mappFile l1 $validI.binPairCount.uni.ICEnorm $minMap $maxIter
 	else
@@ -188,7 +188,7 @@ else
 	    # ICE normalization without filtering low mappability regions
 	    python3 $bin/ICE-with-sparseMatrix.py $validI.binPairCount.uni $mappFile l1 $validI.binPairCount.uni.ICEnorm $minMap $maxIter
 	else
-	    python3 $bin/KR_norm_mHiC.py -r $resolution -l $chromSizeFile -c $normChrom -tr $sparsePerc -f $validI.binPairCount.uni -o $dir
+	   python3 $bin/KR_norm_mHiC.py -r $resolution -l $chromSizeFile -c $normChrom -tr $sparsePerc -f $validI.binPairCount.uni -o $dir
 	fi
 	## Uni bin marginal pair
 	awk '{print $1, $2}' $validI.binPairCount.uni.${normMethod}norm >$validI.marginal1
@@ -203,4 +203,3 @@ fi
 cat $validI.marginal1 $validI.marginal2 | sort -k1,1V -k2,2n | awk '!a[$0]++' >$validI.binPair.Marginal
 rm -rf $validI.marginal*
 rm -rf $dir/sorttmp
-

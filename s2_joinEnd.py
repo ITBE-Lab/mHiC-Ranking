@@ -57,7 +57,7 @@ def is_lowQualMulti(read):
         return True
     else:
         return False
-    
+
 def sam_flag(r1, r2, file1, file2):
     '''
     This function cites the same function from Hi-C Pro (https://github.com/nservant/HiC-Pro/blob/master/scripts/mergeSAM.py) by Nicolas Servant, Eric Viara
@@ -85,37 +85,37 @@ def sam_flag(r1, r2, file1, file2):
   ##32 The other mate in the paired-end alignment is aligned to the reverse reference strand
   ##64 The read is the first (#1) mate in a pair
   ##128 The read is the second (#2) mate in a pair
-  
-  ##The reads were mapped as single-end data, so should expect flags of 
+
+  ##The reads were mapped as single-end data, so should expect flags of
   ##0 (map to the '+' strand) or 16 (map to the '-' strand)
-  ##Output example: a paired-end read that aligns to the reverse strand 
+  ##Output example: a paired-end read that aligns to the reverse strand
   ##and is the first mate in the pair will have flag 83 (= 64 + 16 + 2 + 1)
-  
+
     if f1 & 0x4:
         f1 = f1 | 0x8
 
     if f2 & 0x4:
         f2 = f2 | 0x8
-    
+
     if (not (f1 & 0x4) and not (f2 & 0x4)):
     ##The flag should now indicate this is paired-end data
         f1 = f1 | 0x1
         f1 = f1 | 0x2
         f2 = f2 | 0x1
         f2 = f2 | 0x2
-  
-    
+
+
   ##Indicate if the pair is on the reverse strand
     if f1 & 0x10:
         f2 = f2 | 0x20
-  
+
     if f2 & 0x10:
         f1 = f1 | 0x20
-  
+
   ##Is this first or the second pair?
     f1 = f1 | 0x40
     f2 = f2 | 0x80
-  
+
     ##Insert the modified bitwise flags into the reads
     r1.flag = f1
     r2.flag = f2
@@ -128,11 +128,11 @@ def sam_flag(r1, r2, file1, file2):
     else:
         r1.rnext = r2.tid
         r2.rnext = r1.tid
-   
+
    #PNEXT
     r1.pnext = r2.pos
     r2.pnext = r1.pos
- 
+
     return(r1, r2)
 
 
@@ -158,7 +158,7 @@ if __name__ == "__main__":
 
     if args.verbose:
         print("------------Begin joining ends from read 1 file and read 2 file------------")
-    with pysam.Samfile(args.readEnd1, "rb") as readEnd1, pysam.Samfile(args.readEnd2, "rb") as readEnd2:
+    with pysam.AlignmentFile(args.readEnd1, "rb") as readEnd1, pysam.AlignmentFile(args.readEnd2, "rb") as readEnd2:
 
         if args.output.endswith(".bam"):
             outfile = pysam.AlignmentFile(args.output, "wb", template = readEnd1)
@@ -167,7 +167,7 @@ if __name__ == "__main__":
         else:
             print("Output file format should be either bam or sam.")
             sys.exit()
-            
+
         for r1, r2 in zip(readEnd1.fetch(until_eof = True), readEnd2.fetch(until_eof = True)):
             total_count += 1
 
@@ -228,8 +228,3 @@ if __name__ == "__main__":
     readEnd1.close()
     readEnd2.close()
     outfile.close()
-        
-        
-        
-            
-                
