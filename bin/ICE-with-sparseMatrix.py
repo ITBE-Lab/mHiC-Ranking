@@ -9,7 +9,8 @@ Created on Feb 18, 2013
 
 import sys
 import numpy as np
-import os
+import logging
+logging.basicConfig(level=logging.DEBUG, filename='sample.log')
 
 USAGE = """USAGE: ICE-with-sparseMatrix.py <contactCountsFile> <midsFile> <norm> <outfile> <lowMappThres>
 Implements the ICE correction by Imakaev et al in sparse mode.
@@ -36,6 +37,7 @@ eps=1e-3
 def main(contactCountsFile,midsFile,norm,outfilename,lowMappThres, maxIter):
 
 	(allFragsDic,allFragsDicReverse,badFrags)=assignIndicesToFrags(midsFile,lowMappThres)
+	logging.debug('Sample dict log: %s', allFragsDic)
 	noOfFrags=0
 	for ch in allFragsDic:
 		noOfFrags+=len(allFragsDic[ch])
@@ -45,7 +47,7 @@ def main(contactCountsFile,midsFile,norm,outfilename,lowMappThres, maxIter):
 	#for i in range(len(Xvals)):
 	#	print str(i)+"\t"+str(len(Xvals[i]))
 
-	(XnewVals,XnewIndices,totalbias)=ICE(Xvals,Xindices,noOfFrags,norm,badFrags,allFragsDicReverse,outfilename+".biases", maxIter)
+	(XnewVals,XnewIndices,totalbias)=ICE(Xvals,Xindices,noOfFrags,norm,badFrags,allFragsDicReverse,outfilename+".bias", maxIter)
 	#print(len(Xvals))
 	
 	writeContactsInSparseForm(outfilename,allFragsDic,allFragsDicReverse,XnewVals,XnewIndices,badFrags)
@@ -169,6 +171,7 @@ def	readContactsInSparseForm(contactCountsFile,allFragsDic,noOfFrags):
 	#
 	infile=open(contactCountsFile,'r')
 	for line in infile:
+		#print(line)
 		ch1,mid1,ch2,mid2,contactCount=line.split()
 		contactCount=float(contactCount)
 		indx1=allFragsDic[ch1][mid1]

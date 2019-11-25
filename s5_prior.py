@@ -342,6 +342,8 @@ def main():
             compare_Spline_FDR(FDRXinit, FDRYinit, FDRX, FDRY, os.path.join(outputPath, libName+".spline_FDR_comparison"),str(i))
             compareFits_Spline(splineXinit, splineYinit, splineX, splineY, os.path.join(outputPath,libName+".spline_comparison"), str(i))
 
+    if noOfPasses == 1:
+        (splineX, splineY) = (splineXinit,splineYinit)
     ## Ye - write out prior
     splineOut = open(outputPath + "/s5_prior.mhic" , "w")
     if len(splineX) != len(splineY):
