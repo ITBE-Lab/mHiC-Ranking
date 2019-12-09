@@ -9,8 +9,6 @@ Created on Feb 18, 2013
 
 import sys
 import numpy as np
-import logging
-logging.basicConfig(level=logging.DEBUG, filename='sample.log')
 
 USAGE = """USAGE: ICE-with-sparseMatrix.py <contactCountsFile> <midsFile> <norm> <outfile> <lowMappThres>
 Implements the ICE correction by Imakaev et al in sparse mode.
@@ -20,15 +18,15 @@ Can be slower than full matrix implementation but at least is feasible for bigge
 		format : 		<chr ID 1>	<mid 1> 	<chr ID 2>	<mid 2>	<count>
 						chr8	142250000	chr8	142350000	31
 
-<midsFile>				: file with bin midpoints 
+<midsFile>				: file with bin midpoints
 		format:
-						<chr ID>	<mid>	<anythingElse> <mappabilityValue> <anythingElse>+ 
+						<chr ID>	<mid>	<anythingElse> <mappabilityValue> <anythingElse>+
 						chr10	50000	NA	0.65	...
 
 <norm>					: l1 or l2 norm
 
-<outfile>				: file to write the output to. This will be a file with a matrix of size <numberOfBins> X <numberOfBins> 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+<outfile>				: file to write the output to. This will be a file with a matrix of size <numberOfBins> X <numberOfBins>
+
 <lowMappThres>			: filter out loci that are less mappable than the threshold. Reasonable choice 0.5
 <maxIter>                       : maximum iteration number.
 """
@@ -37,7 +35,6 @@ eps=1e-3
 def main(contactCountsFile,midsFile,norm,outfilename,lowMappThres, maxIter):
 
 	(allFragsDic,allFragsDicReverse,badFrags)=assignIndicesToFrags(midsFile,lowMappThres)
-	logging.debug('Sample dict log: %s', allFragsDic)
 	noOfFrags=0
 	for ch in allFragsDic:
 		noOfFrags+=len(allFragsDic[ch])
@@ -49,7 +46,7 @@ def main(contactCountsFile,midsFile,norm,outfilename,lowMappThres, maxIter):
 
 	(XnewVals,XnewIndices,totalbias)=ICE(Xvals,Xindices,noOfFrags,norm,badFrags,allFragsDicReverse,outfilename+".bias", maxIter)
 	#print(len(Xvals))
-	
+
 	writeContactsInSparseForm(outfilename,allFragsDic,allFragsDicReverse,XnewVals,XnewIndices,badFrags)
 	#writeContactsInSparseForm-notNecessary(contactCountsFile,outfilename,allFragsDic,allFragsDicReverse,XnewVals,XnewIndices,totalbias)
 	#writeContactsInSparseForm-BUG-found-03-27-2014(outfilename,allFragsDic,allFragsDicReverse,XnewVals,XnewIndices)
@@ -213,4 +210,3 @@ if __name__ == "__main__":
 		sys.stderr.write(USAGE)
 		sys.exit(1)
 	main(str(sys.argv[1]),str(sys.argv[2]),str(sys.argv[3]),str(sys.argv[4]),float(sys.argv[5]), int(sys.argv[6]))
-
