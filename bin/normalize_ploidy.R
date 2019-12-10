@@ -1,6 +1,6 @@
 ## This script takes the output of the mHiC pipeline and multiplies all interactions with the core by 0.5.
 ## This way, we account for the different ploidy in the genome assembly of T. brucei.
-## Author: Benedikt G Brink, LMU Munich
+## Author: Benedikt G Brink, LMU Munich, 2019
 
 interactions <- read.table(snakemake@input[[1]], sep = "\t")
 ids <- grep("core", interactions[,1])

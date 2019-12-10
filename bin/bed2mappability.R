@@ -1,5 +1,6 @@
-# script to bin mappability bed file for mHiC ICEing
-# Author: Benedikt G Brink, LMU Munich, 2019
+## script to bin mappability bed file for mHiC ICEing
+## Author: Benedikt G Brink, LMU Munich, 2019
+
 library(GenomicRanges)
 
 fai <- read.table(snakemake@input[["fai"]], stringsAsFactors = F)
@@ -22,8 +23,8 @@ hits <- findOverlaps(bins, bed_ranges)
 agg <- aggregate(bed_ranges, hits, score=mean(mappability))
 bins$mappability <- agg$score
 
-ice_frame <- data.frame(chr=seqnames(bins), 
-                        midPoint=start(bins)+binsize/2, 
+ice_frame <- data.frame(chr=seqnames(bins),
+                        midPoint=start(bins)+binsize/2,
                         anything=rep(NA, length(bins)),
                         mappability=bins$mappability)
 
