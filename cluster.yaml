@@ -1,0 +1,26 @@
+__default__:
+  queue: "slim16"
+  threads: "8"
+  memory: "25G"
+  name: "{rule}"
+  output: ".slurm_logs/{rule}-%j.out"
+  time: 1-00:00:00
+
+alignment:
+  threads: "64"
+  memory: "250G"
+  time: 16:00:00
+
+gem_mappability:
+  threads: "64"
+  memory: "250G"
+  time: 12:00:00
+
+duplicates_removal:
+  time: 4-00:00:00
+
+norm_bin:
+  time: 2-00:00:00
+
+assign_multi_reads:
+  memory: "125G"

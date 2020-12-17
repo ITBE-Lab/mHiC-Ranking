@@ -1,0 +1,18 @@
+name: mhic_env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - seqkit=0.14.0
+  - bwa=0.7.17
+  - samtools=1.9
+  - python=3.7
+  - biopython
+  - pysam
+  - numpy
+  - scipy
+  - bx-python
+  - scikit-learn
+  - sortedcontainers
+  - matplotlib
+  - cython

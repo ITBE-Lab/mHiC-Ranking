@@ -1,0 +1,53 @@
+# reference genome and annotation:
+genome: "/work/project/ladsie_002/Tbrucei_Genomes/Tb427_2018/TriTrypDB-43_TbruceiLister427_2018_Genome_BES2masked.fasta"
+genomeAnnotation: "/work/project/ladsie_002/Tbrucei_Genomes/Tb427_2018/TriTrypDB-43_TbruceiLister427_2018.gff"
+genomeName: "TbruceiLister427_2018"
+
+# list of chromsomes that should be analyzed (must match the reference genome):
+chr_list: "Chr1_3A_Tb427v10 Chr1_3B_Tb427v10 Chr1_5A_Tb427v10 Chr1_5B_Tb427v10
+    Chr1_core_Tb427v10 Chr2_5A_Tb427v10 Chr2_core_Tb427v10 Chr3_3A_Tb427v10
+    Chr3_5A_Tb427v10 Chr3_5B_Tb427v10 Chr3_core_Tb427v10 Chr4_3A_Tb427v10
+    Chr4_3B_Tb427v10 Chr4_5A_Tb427v10 Chr4_5B_Tb427v10 Chr4_core_Tb427v10
+    Chr5_3A_Tb427v10 Chr5_3B_Tb427v10 Chr5_core_Tb427v10 Chr6_3A_Tb427v10
+    Chr6_3B_Tb427v10 Chr6_core_Tb427v10 Chr7_5A_Tb427v10 Chr7_core_Tb427v10
+    Chr8_3A_Tb427v10 Chr8_3B_Tb427v10 Chr8_5A_Tb427v10 Chr8_5B_Tb427v10
+    Chr8_core_Tb427v10 Chr9_3A_Tb427v10 Chr9_3B_Tb427v10 Chr9_5A_Tb427v10
+    Chr9_5B_Tb427v10 Chr9_core_Tb427v10 Chr10_3A_Tb427v10 Chr10_3B_Tb427v10
+    Chr10_5A_Tb427v10 Chr10_5B_Tb427v10 Chr10_core_Tb427v10 Chr11_3A_Tb427v10
+    Chr11_3B_Tb427v10 Chr11_5A_Tb427v10 Chr11_5B_Tb427v10 Chr11_core_Tb427v10
+    BES10_Tb427v10 BES11_Tb427v10 BES12_Tb427v10 BES13_Tb427v10 BES14_Tb427v10
+    BES15_Tb427v10 BES17_Tb427v10 BES1_Tb427v10 BES2_Tb427v10 BES3_Tb427v10
+    BES4_Tb427v10 BES5_Tb427v10 BES7_Tb427v10"
+
+# Hi-C raw reads:
+raw_data: "/work/project/ladsie_002/analyses/data/HiC_data"
+
+# HiC digestion enzyme:
+enzyme: mboi
+enzyme_cutsite: "GATCGATC"
+
+# Folder containing GFFs for virtual 4C. The files should contain one viewpoint each.
+gff_folder: "/work/project/ladsie_006/GFF-files-4C-Genome-Version10"
+
+# Binning resolution (multiple values are possible, separated with comma).
+# The smaller the bin_size, the deeper the sequencing needs to be.
+resolution: [50000]
+
+# Filter the mHi-C outcome by the posterior probability.
+# By default, we recommend filtering by >0.5 so that each multi-read can at most have one select alignment position.
+# For a more strigent filtering, it can be set to 0.6 or even 0.9.
+probability: [0.6]
+
+# Output directory (will be created automatically):
+output: "/your/output/directory"
+
+# Possibility to run multiple datasets at once:
+sets:
+#  H3V: "/work/project/ladsie_002/analyses/data/HiC_data/H3V"
+#  H3V_H4V_dKO: "/work/project/ladsie_002/analyses/data/HiC_data/H3V_H4V_dKO"
+#  H4V: "/work/project/ladsie_002/analyses/data/HiC_data/H4V"
+#  N50: "/work/project/ladsie_002/analyses/data/HiC_data/N50"
+  P10: "/work/project/ladsie_002/analyses/data/HiC_data/P10"
+#  Procyclic: "/work/project/ladsie_002/analyses/data/HiC_data/Procyclic"
+#  SM: "/work/project/ladsie_002/analyses/data/HiC_data/SM"
+#  WT: "/work/project/ladsie_002/analyses/data/HiC_data/WT"

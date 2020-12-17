@@ -1,0 +1,7 @@
+name: gem_env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - gem2
+  - bedops

@@ -1,0 +1,17 @@
+name: hic_pro
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=2.7
+  - biopython
+  - bowtie2
+  - pysam
+  - bx-python
+  - numpy
+  - scipy
+  - r-rcolorbrewer
+  - r-ggplot2
+  - gxx_impl_linux-64
+  - samtools
+  - bwa

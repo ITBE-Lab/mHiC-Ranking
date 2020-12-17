@@ -1,0 +1,6 @@
+name: gem_env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - bioconductor-genomicranges

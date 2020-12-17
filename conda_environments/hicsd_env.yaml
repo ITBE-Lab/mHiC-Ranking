@@ -1,0 +1,7 @@
+name: hicsd_env
+channels:
+dependencies:
+   - python=3.7
+   - pip
+   - pip:
+     - "git+https://github.com/bgbrink/HiCsuntdracones.git@b1fc8df0624a922736a51f599fcf87647d29609b"
