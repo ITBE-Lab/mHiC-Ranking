@@ -1,4 +1,6 @@
-This is a fork of the mHi-C pipeline, which was originally developed and published by Ye Zheng, Ferhat Ay, and Sunduz Keles (see below). I made a few changes for our purposes and implemented the whole pipeline in Snakemake with automatic dependency management via conda.
+This is a fork of the mHi-C pipeline, which was originally developed and published by Ye Zheng, Ferhat Ay, and Sunduz Keles (see below). We made a few changes and extended the pipeline for our purposes, while implementing everything in Snakemake with automatic dependency management via conda. The most notable addition is the possibility to perform virtual 4C analyses based on custom viewpoints in the genome. 
+
+Siegel Lab, LMU Munich, 2020
 
 # mHi-C: robust leveraging of multi-mapping reads in Hi-C analysis
 Ye Zheng, Ferhat Ay, and Sunduz Keles. [Generative modeling of multi-mapping reads with mHi-C advances analysis of Hi-C studies.](https://elifesciences.org/articles/38070) eLife 2019;8:e38070. 
