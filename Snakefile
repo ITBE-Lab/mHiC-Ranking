@@ -98,9 +98,9 @@ rule bwa_index:
 
 rule compile_cutsite:
     input:
-        expand("{mHiC}/bin/cutsite_trimming_mHiC.cpp", mHiC=config["mHiC"])
+        expand("bin/cutsite_trimming_mHiC.cpp")
     output:
-        expand("{mHiC}/bin/cutsite_trimming_mHiC", mHiC=config["mHiC"])
+        expand("bin/cutsite_trimming_mHiC")
     conda:
         "conda_environments/hic_pro.yaml"
     shell:
@@ -117,7 +117,7 @@ rule alignment:
             output=config["output"], genome=config["genomeName"], indices=["amb","ann","bwt","pac","sa"]),
         genome=expand("{output}/genome_files/{genome}_without_unitigs.fa",
             output=config["output"], genome=config["genomeName"]),
-        cutsite=expand("{mHiC}/bin/cutsite_trimming_mHiC", mHiC=config["mHiC"])
+        cutsite=expand("bin/cutsite_trimming_mHiC")
     output:
         temp(expand("{output}/{{sample}}/s1/{{sample}}_{i}.bam",
             output=config["output"], i={1,2}))
