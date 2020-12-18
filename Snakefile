@@ -341,7 +341,7 @@ rule gem_mappability:
     threads: 64
     shell:
         """
-        PREFIX=$(echo {output} | sed s/.bed//)
+        PREFIX=$(echo {output} | sed s/.bg//)
         gem-indexer -T {threads} -c dna -i {input} -o ${{PREFIX}}
         gem-mappability -T {threads} -I ${{PREFIX}}.gem -l {params.kmer} -o ${{PREFIX}}
         gem-2-bed mappability -I ${{PREFIX}}.gem -i ${{PREFIX}}.mappability -o ${{PREFIX}}
