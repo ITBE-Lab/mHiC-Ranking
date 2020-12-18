@@ -1,34 +1,38 @@
 configfile: "config.yaml"
 
-import glob
+import os
 import re
 from collections import defaultdict
 
 # set up lists with all files and their folders
-raw_data=config["raw_data"]
 samples = []
 merged_samples = set()
 folders = {}
 replicates = defaultdict(list)
-for file in glob.glob(raw_data + "/**", recursive=True):
-    if '_R1.fq.gz' in file:
-        split = re.split('/|_R1', file)
-        filename, folder = split[-2], split[-3]
-        split = re.split('_', filename)
-        merged_filename, replicate = split[-2], split[-1]
-        if folder in config["sets"]: # only run files that are defined in config.yaml
+data_sets = config["reads"]
+for data_set in data_sets:
+    folder = data_sets[data_set]
+    files = [f for f in os.listdir(folder) if re.search(r'^[^.].*_R.\.f*', f)]
+    for file in files:
+        if '_R1' in file:
+            my_split = re.split('_R1', file)
+            filename = my_split[-2]
+            my_split = re.split('_', filename)
+            merged_filename, replicate = my_split[-2], my_split[-1]
             folders[filename] = folder  # we will need this one later
             samples.append(filename)
             replicates[merged_filename].append(replicate)
             merged_samples.add(merged_filename)
 merged_samples=list(merged_samples)
 
-gfffiles = []
-gff_folder = config["gff_folder"]
-for file in glob.glob(gff_folder + "/*.gff", recursive=True):
-    split = re.split('/|.gff', file)
-    filename = split[-2]
-    gfffiles.append(filename)
+gff_files = []
+folder = config["gff_folder"]
+files = [f for f in os.listdir(folder) if re.search(r'^[^.].*\.gff?', f)]
+for file in files:
+    my_split = re.split('.gff', file)
+    filename = my_split[-2]
+    gff_files.append(filename)
+
 
 rule all:
     input:
@@ -36,7 +40,7 @@ rule all:
         #         output=config["output"], resolution=config["resolution"], sample=merged_samples)
         expand("{output}/{sample}_merged/s7_{resolution}_{threshold}_4C/Virtual_4C/{gff_file}.wig",
            output=config["output"], resolution=config["resolution"], sample=merged_samples,
-           threshold=config["probability"], gff_file=gfffiles)
+           threshold=config["probability"], gff_file=gff_files)
         # expand("{output}/{sample}_merged/s4_{resolution}/{genome}_without_unitigs_mappability.ice",
         #     resolution=config["resolution"], sample=merged_samples, output=config["output"], genome=config["genomeName"])
 
@@ -111,8 +115,8 @@ rule compile_cutsite:
 ## ******************
 rule alignment:
     input:
-        read=lambda wildcards: expand("{data}/{set}/{sample}_R{i}.fq.gz",
-            data=config["raw_data"], set=folders[wildcards.sample], sample=wildcards.sample, i={1,2}),
+        read=lambda wildcards: expand("{set}/{sample}_R{i}.fq.gz",
+            set=folders[wildcards.sample], sample=wildcards.sample, i={1,2}),
         indices=expand("{output}/genome_files/{genome}_without_unitigs.fa.{indices}",
             output=config["output"], genome=config["genomeName"], indices=["amb","ann","bwt","pac","sa"]),
         genome=expand("{output}/genome_files/{genome}_without_unitigs.fa",
@@ -122,8 +126,8 @@ rule alignment:
         temp(expand("{output}/{{sample}}/s1/{{sample}}_{i}.bam",
             output=config["output"], i={1,2}))
     params:
-        read_folder=lambda wildcards: expand("{data}/{set}",
-            data=config["raw_data"], set=folders[wildcards.sample]),
+        read_folder=lambda wildcards: expand("{set}",
+             set=folders[wildcards.sample]),
         out_folder=lambda wildcards: expand("{output}/{sample}",
             output=config["output"], sample=wildcards.sample),
         cutsite=config["enzyme_cutsite"]
