@@ -2,6 +2,10 @@
 .DS_Store
 
 .snakemake*
+.slurm_logs/*
+in/*
+out/*
+depre_out/*
 .idea/
 # Byte-compiled / optimized / DLL files
 __pycache__/

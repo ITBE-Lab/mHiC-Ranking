@@ -1,6 +1,6 @@
 # reference genome and annotation:
-genome: "/work/project/ladsie_002/Tbrucei_Genomes/Tb427_2018/TriTrypDB-43_TbruceiLister427_2018_Genome_BES2masked.fasta"
-genomeAnnotation: "/work/project/ladsie_002/Tbrucei_Genomes/Tb427_2018/TriTrypDB-43_TbruceiLister427_2018.gff"
+genome: "/work/project/ladsie_001/Tbrucei_Genomes/Tb427_2018/TriTrypDB-43_TbruceiLister427_2018_Genome_BES2masked.fasta"
+genomeAnnotation: "/work/project/ladsie_001/Tbrucei_Genomes/Tb427_2018/TriTrypDB-43_TbruceiLister427_2018.gff"
 genomeName: "TbruceiLister427_2018"
 
 # list of chromsomes that should be analyzed (must match the reference genome):
@@ -36,7 +36,7 @@ resolution: [50000]
 probability: [0.6]
 
 # Output directory (will be created automatically):
-output: "/your/output/directory"
+output: "out"
 
 # Location of the raw Hi-C reads in fastq format (multiple datasets can be run at once):
 reads:
@@ -44,7 +44,12 @@ reads:
 #  H3V_H4V_dKO: "/work/project/ladsie_002/analyses/data/HiC_data/H3V_H4V_dKO"
 #  H4V: "/work/project/ladsie_002/analyses/data/HiC_data/H4V"
 #  N50: "/work/project/ladsie_002/analyses/data/HiC_data/N50"
-  P10: "/work/project/ladsie_002/analyses/data/HiC_data/P10"
+  P10: "in/P10"
 #  Procyclic: "/work/project/ladsie_002/analyses/data/HiC_data/Procyclic"
 #  SM: "/work/project/ladsie_002/analyses/data/HiC_data/SM"
 #  WT: "/work/project/ladsie_002/analyses/data/HiC_data/WT"
+
+# Annotation types to rank (multiple values are possible, separated with comma).
+# Each annotation type and viewpoint combination will create a seperate file.
+# Can be set to all to rank annotations of any type
+annotations: ["gene"]

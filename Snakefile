@@ -615,3 +615,17 @@ rule virtual_4c:
          --bin_size {params.resolution} \
          --output_file {output}
         """
+
+## ************************************************************************************
+## step 7 - Ranking annotations
+## ************************************************************************************
+rule rank_annotations:
+    input:
+        matrix=expand("{output}/{{sample}}_merged/s7_{{resolution}}_{{threshold}}_4C/{{sample}}.ploidy_normalized.uniMulti",
+            output=config["output"]),
+        gff=expand("{gff_folder}/{{gff_file}}.gff", gff_folder=config["gff_folder"])
+    output:
+        expand("{output}/{{sample}}_merged/s8_{{resolution}}_{{threshold}}_4C/{{sample}}.{{gff_file}}.{{annotation}}.ranking.gff",
+            output=config["output"])
+    shell:
+        "python bin/rank_annotations.py -v {input.gff} {input.matrix} {{resolution}} {{genomeAnnotation}} {output}"
