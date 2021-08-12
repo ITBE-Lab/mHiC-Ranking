@@ -52,4 +52,4 @@ reads:
 # Annotation types to rank (multiple values are possible, separated with comma).
 # Each annotation type and viewpoint combination will create a seperate file.
 # Can be set to all to rank annotations of any type
-annotations: ["gene"]
+annotation_filter: ["gene"]

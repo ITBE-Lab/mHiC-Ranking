@@ -40,7 +40,11 @@ rule all:
         #         output=config["output"], resolution=config["resolution"], sample=merged_samples)
         expand("{output}/{sample}_merged/s7_{resolution}_{threshold}_4C/Virtual_4C/{gff_file}.wig",
            output=config["output"], resolution=config["resolution"], sample=merged_samples,
-           threshold=config["probability"], gff_file=gff_files)
+           threshold=config["probability"], gff_file=gff_files),
+
+        expand("{output}/{sample}_merged/s8_{resolution}_{threshold}_4C/{sample}.{gff_file}.{annotation_filter}.ranking.gff",
+           output=config["output"], resolution=config["resolution"], sample=merged_samples,
+           threshold=config["probability"], gff_file=gff_files, annotation_filter=config["annotation_filter"])
         # expand("{output}/{sample}_merged/s4_{resolution}/{genome}_without_unitigs_mappability.ice",
         #     resolution=config["resolution"], sample=merged_samples, output=config["output"], genome=config["genomeName"])
 
@@ -623,9 +627,13 @@ rule rank_annotations:
     input:
         matrix=expand("{output}/{{sample}}_merged/s7_{{resolution}}_{{threshold}}_4C/{{sample}}.ploidy_normalized.uniMulti",
             output=config["output"]),
-        gff=expand("{gff_folder}/{{gff_file}}.gff", gff_folder=config["gff_folder"])
+        gff=expand("{gff_folder}/{{gff_file}}.gff", gff_folder=config["gff_folder"]),
+        genome_annotation=config["genomeAnnotation"]
     output:
-        expand("{output}/{{sample}}_merged/s8_{{resolution}}_{{threshold}}_4C/{{sample}}.{{gff_file}}.{{annotation}}.ranking.gff",
+        expand("{output}/{{sample}}_merged/s8_{{resolution}}_{{threshold}}_4C/{{sample}}.{{gff_file}}.{{annotation_filter}}.ranking.gff",
             output=config["output"])
+    params:
+        resolution=lambda wildcards: wildcards.resolution,
+        annotation_filter=lambda wildcards: wildcards.annotation_filter,
     shell:
-        "python bin/rank_annotations.py -v {input.gff} {input.matrix} {{resolution}} {{genomeAnnotation}} {output}"
+        "python bin/rank_annotations.py -v {input.gff} -f {params.annotation_filter} {input.matrix} {params.resolution} {input.genome_annotation} {output}"
