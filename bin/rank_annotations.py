@@ -103,13 +103,13 @@ class Annotations:
             # register overlapping annotations
             for anno in val:
                 from_id = (anno.from_pos // bin_size) + bin_id_max
-                to_id = (anno.from_pos // bin_size) + bin_id_max
+                to_id = (anno.to_pos // bin_size) + bin_id_max
                 bin_id_max_chr = max(bin_id_max_chr, from_id, to_id)
                 if from_id == to_id:
                     anno.bin_id = str(from_id)
                 else:
                     anno.bin_id = str(from_id) + "-" + str(to_id) 
-            bin_id_max = bin_id_max_chr
+            bin_id_max = bin_id_max_chr + 1
 
 
     def interaction(self, chr_, from_pos, to_pos, val):
@@ -154,7 +154,7 @@ def main(interaction_file, bin_size, annotation_file, annotation_filter, viewpoi
     annos = Annotations(annotation_file, annotation_filter, bin_size)
 
     if not viewpoint_file is None:
-        with open(annotation_file, "r") as in_file_1:
+        with open(viewpoint_file, "r") as in_file_1:
             for line in in_file_1:
                 if line[0] == "#":
                     continue
@@ -166,11 +166,11 @@ def main(interaction_file, bin_size, annotation_file, annotation_filter, viewpoi
     for file_name, chr_1, pos_1, chr_2, pos_2, val in parse_interactions(interaction_file):
         if not viewpoint_file is None:
             if not overlaps(chr_1, pos_1, pos_1 + bin_size, view_chr, view_from, view_to) and \
-               not overlaps(chr_1, pos_1, pos_1 + bin_size, view_chr, view_from, view_to):
+               not overlaps(chr_2, pos_2, pos_2 + bin_size, view_chr, view_from, view_to):
                 continue
 
-        annos.interaction(chr_1, pos_1, pos_1 + bin_size, val if not count else 1)
-        annos.interaction(chr_2, pos_2, pos_2 + bin_size, val if not count else 1)
+        annos.interaction(chr_1, pos_1 - bin_size//2, pos_1 + bin_size//2, val if not count else 1)
+        annos.interaction(chr_2, pos_2 - bin_size//2, pos_2 + bin_size//2, val if not count else 1)
 
     with open(out_filename, "w") as out_file:
         out_file.write("##parameters:\n")
