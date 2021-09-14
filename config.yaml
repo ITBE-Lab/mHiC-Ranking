@@ -49,7 +49,7 @@ reads:
 #  SM: "/work/project/ladsie_002/analyses/data/HiC_data/SM"
 #  WT: "/work/project/ladsie_002/analyses/data/HiC_data/WT"
 
-# Annotation types to rank (multiple values are possible, separated with comma).
-# Each annotation type and viewpoint combination will create a seperate file.
-# Can be set to all to rank annotations of any type
-annotation_filter: ["gene"]
+# Feature types to rank (multiple values are possible, separated with comma).
+# Each feature type and viewpoint combination will create a seperate file.
+# Can be set to 'all' to rank features of any type
+feature_filter: ["gene"]

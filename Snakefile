@@ -36,17 +36,7 @@ for file in files:
 
 rule all:
     input:
-        # expand("{output}/{sample}_merged/s7_{resolution}_4C/{sample}.interactions.homer",
-        #         output=config["output"], resolution=config["resolution"], sample=merged_samples)
-        expand("{output}/{sample}_merged/s7_{resolution}_{threshold}_4C/Virtual_4C/{gff_file}.wig",
-           output=config["output"], resolution=config["resolution"], sample=merged_samples,
-           threshold=config["probability"], gff_file=gff_files),
-
-        expand("{output}/{sample}_merged/s8_{resolution}_{threshold}_4C/{sample}.{gff_file}.{annotation_filter}.ranking.gff",
-           output=config["output"], resolution=config["resolution"], sample=merged_samples,
-           threshold=config["probability"], gff_file=gff_files, annotation_filter=config["annotation_filter"])
-        # expand("{output}/{sample}_merged/s4_{resolution}/{genome}_without_unitigs_mappability.ice",
-        #     resolution=config["resolution"], sample=merged_samples, output=config["output"], genome=config["genomeName"])
+        expand("{output}/{sample}_merged/s8_{resolution}_{threshold}_4C/{sample}.{gff_file}.{feature_filter}.ranking.gff", output=config["output"], resolution=config["resolution"], sample=merged_samples, threshold=config["probability"], gff_file=gff_files, feature_filter=config["feature_filter"])
 
 rule generate_genome_file_without_unitigs:
     input:
@@ -621,19 +611,18 @@ rule virtual_4c:
         """
 
 ## ************************************************************************************
-## step 7 - Ranking annotations
+## step 7 - Ranking features
 ## ************************************************************************************
-rule rank_annotations:
+rule rank_features:
     input:
-        matrix=expand("{output}/{{sample}}_merged/s7_{{resolution}}_{{threshold}}_4C/{{sample}}.ploidy_normalized.uniMulti",
+        interactions=expand("{output}/{{sample}}_merged/s7_{{resolution}}_{{threshold}}_4C/Virtual_4C/{{gff_file}}.wig",
             output=config["output"]),
-        gff=expand("{gff_folder}/{{gff_file}}.gff", gff_folder=config["gff_folder"]),
         genome_annotation=config["genomeAnnotation"]
     output:
-        expand("{output}/{{sample}}_merged/s8_{{resolution}}_{{threshold}}_4C/{{sample}}.{{gff_file}}.{{annotation_filter}}.ranking.gff",
+        expand("{output}/{{sample}}_merged/s8_{{resolution}}_{{threshold}}_4C/{{sample}}.{{gff_file}}.{{feature_filter}}.ranking.gff",
             output=config["output"])
     params:
         resolution=lambda wildcards: wildcards.resolution,
-        annotation_filter=lambda wildcards: wildcards.annotation_filter,
+        feature_filter=lambda wildcards: wildcards.feature_filter,
     shell:
-        "python bin/rank_annotations.py -v {input.gff} -f {params.annotation_filter} {input.matrix} {params.resolution} {input.genome_annotation} {output}"
+        "python bin/rank_features.py -f {params.feature_filter} {input.interactions} {params.resolution} {input.genome_annotation} {output}"

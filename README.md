@@ -1,3 +1,6 @@
+# mHiC-Ranking
+
+
 This is a fork of the mHi-C pipeline, which was originally developed and published by Ye Zheng, Ferhat Ay, and Sunduz Keles (see below). We made a few changes and extended the pipeline for our purposes, while implementing everything in Snakemake with automatic dependency management via conda. The most notable addition is the possibility to perform virtual 4C analyses based on custom viewpoints in the genome. 
 
 Siegel Lab, LMU Munich, 2020

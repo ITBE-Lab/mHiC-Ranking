@@ -41,6 +41,7 @@ class Annotation:
         self.opt = (opt)
         self.val = 0
         self.bin_id = 0
+        self.num_bins = 1
 
     def key(self):
         return self.chrom
@@ -56,14 +57,21 @@ class Annotation:
                 return val
         return "idless_" + str(self.type)
 
+    def get_val(self):
+        return self.val / self.num_bins
+
     def __str__(self):
         return as_tsv(
                       self.chrom,
+                      "rank_features.py",
                       self.type,
                       self.from_pos,
                       self.to_pos,
+                      self.get_val(),
                       self.strand,
-                      "interactions=" + str(self.val) + ";bin_id=" + str(self.bin_id) + ";" + self.extras,
+                      ".",
+                      "interactions=" + str(self.get_val()) + ";bin_id=" + str(self.bin_id) + ";" + \
+                            self.extras,
                       *self.opt
                     )
 
@@ -77,13 +85,15 @@ class Annotations:
         self.data = {}
         self.filter = annotation_filter
         self.encountered_annos = set()
+        self.preamble = ""
 
         with open(annotation_file, "r") as in_file_1:
             for line in in_file_1:
                 if line[0] == "#":
+                    self.preamble += line
                     continue
                 # parse file colum
-                anno = Annotation(*line.split())
+                anno = Annotation(*line[:-1].split("\t"))
                 if anno.type in annotation_filter or "all" in annotation_filter:
                     self._add(anno)
                     self.encountered_annos.add(anno.type)
@@ -105,10 +115,11 @@ class Annotations:
                 from_id = (anno.from_pos // bin_size) + bin_id_max
                 to_id = (anno.to_pos // bin_size) + bin_id_max
                 bin_id_max_chr = max(bin_id_max_chr, from_id, to_id)
+                anno.num_bins = 1 + to_id - from_id
                 if from_id == to_id:
                     anno.bin_id = str(from_id)
                 else:
-                    anno.bin_id = str(from_id) + "-" + str(to_id) 
+                    anno.bin_id = str(from_id) + "-" + str(to_id)
             bin_id_max = bin_id_max_chr + 1
 
 
@@ -137,52 +148,44 @@ class Annotations:
                 for anno in val:
                     if anno.type == anno_type or anno_type is "all":
                         ret.append(anno)
-            ret.sort(key=lambda x: (-x.val, x.chrom, x.from_pos))
+            ret.sort(key=lambda x: (-x.get_val(), x.chrom, x.from_pos))
             yield anno_type, ret
 
 def parse_interactions(in_filenames):
     for in_filename in in_filenames:
         with open(in_filename, "r") as in_file_1:
+            curr_chr = None
+            bin_size = 0
             for line in in_file_1:
-                # parse file columns
-                chr_1, pos_1, chr_2, pos_2, val = line.split()
+                if len(line) <= 1:
+                    continue
+                split_str = line[:-1].split(" ")
+                front = split_str[0]
+                if front == "track":
+                    continue
+                elif front == "variableStep":
+                    curr_chr = split_str[1].split("=")[1]
+                    bin_size = int(split_str[2].split("=")[1])
+                else:
+                    yield in_filename, curr_chr, int(front) - bin_size//2, int(front) + bin_size//2, float(split_str[1])
 
-                yield in_filename, chr_1, int(pos_1), chr_2, int(pos_2), int(val)
 
-
-def main(interaction_file, bin_size, annotation_file, annotation_filter, viewpoint_file, count, out_filename, args):
+def main(interaction_file, bin_size, annotation_file, annotation_filter, count, out_filename, args):
     annos = Annotations(annotation_file, annotation_filter, bin_size)
 
-    if not viewpoint_file is None:
-        with open(viewpoint_file, "r") as in_file_1:
-            for line in in_file_1:
-                if line[0] == "#":
-                    continue
-                view_chr, _, _, view_from, view_to, *_ = line.split()
-                view_from = int(view_from)
-                view_to = int(view_to)
-
-
-    for file_name, chr_1, pos_1, chr_2, pos_2, val in parse_interactions(interaction_file):
-        if not viewpoint_file is None:
-            if not overlaps(chr_1, pos_1, pos_1 + bin_size, view_chr, view_from, view_to) and \
-               not overlaps(chr_2, pos_2, pos_2 + bin_size, view_chr, view_from, view_to):
-                continue
-
-        annos.interaction(chr_1, pos_1 - bin_size//2, pos_1 + bin_size//2, val if not count else 1)
-        annos.interaction(chr_2, pos_2 - bin_size//2, pos_2 + bin_size//2, val if not count else 1)
+    for file_name, chr_1, start, end, val in parse_interactions(interaction_file):
+        annos.interaction(chr_1, start, end, val if not count else 1)
 
     with open(out_filename, "w") as out_file:
-        out_file.write("##parameters:\n")
+        out_file.write(annos.preamble)
+        out_file.write("##rank_features parameters:\n")
         for arg in vars(args):
-            out_file.write("##" + str(arg) + "=" + str(getattr(args, arg)) + "\n")
-        if not viewpoint_file is None:
-            out_file.write("##viewpoint: " + view_chr + ":" + str(view_from) + "-" + str(view_to) + "\n")
+            out_file.write("##rank_features " + str(arg) + "=" + str(getattr(args, arg)) + "\n")
         for anno_type, anno_list in annos.rank():
-            out_file.write("##ranking for " + str(anno_type) + "\n")
+            out_file.write("##rank_features feature=" + str(anno_type) + "\n")
             out_file.write("#")
-            out_file.write(as_tsv("contig", "type", "start", "end",
-                                  "strand", "bin_id", "extra"))
+            out_file.write(as_tsv("contig", "source", "feature", "start", "end", "score",
+                                  "strand", "phase", "attributes"))
             out_file.write("\n")
             for anno in anno_list:
                 out_file.write(str(anno))
@@ -191,7 +194,7 @@ def main(interaction_file, bin_size, annotation_file, annotation_filter, viewpoi
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Rank annotations by Hi-C interactions.',
+    parser = argparse.ArgumentParser(description='Rank features by Hi-C interactions.',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('interactions', type=str,
                         help='File containing the Hi-C interactions. Use a comma seperated list for adding multiple files.')
@@ -200,9 +203,7 @@ if __name__ == "__main__":
     parser.add_argument('annotations', type=str,
                         help='File containing the genome annotations.')
     parser.add_argument('-f', "--filter", type=str, default="gene",
-                        help='Comma seperated list of annotation types to rank. Parameter can be set to \'all\' for ranking all types of annotation')
-    parser.add_argument('-v', "--viewpoint", type=str,
-                        help='Genomic viewpoint for the interactions as gff file.')
+                        help='Comma seperated list of features to rank. Parameter can be set to \'all\' for ranking all types of features')
     parser.add_argument('-c', "--count", action="store_true",
                         help='Count the number of bins that interactions occur with instead of summing up all interactions.')
     parser.add_argument('out_filename', type=str,
@@ -210,4 +211,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     main(args.interactions.strip().split(","), args.bin_size, args.annotations, args.filter.strip().split(","),
-         args.viewpoint, args.count, args.out_filename, args)
+         args.count, args.out_filename, args)
